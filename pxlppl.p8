@@ -4,6 +4,8 @@ __lua__
 mw=127 mh=63 mc1=6 mc2=1 flc=16--flc=13
 px=17 py=1
 
+up=false
+
 function makeactor(x,y,z,w,c1,c2)
 	local a={}
 	a.x=x
@@ -56,15 +58,16 @@ function _draw()
 	cls()
 	rectfill(0,0,mw,mh,flc)
 	foreach(actor,drawactor)
-	--map(0,0,0,0,w,h)
-	--spr(1,x,y)
 	--loop through every map cell
 	for y=0,mh do
 		for x=0,mw do
 		 --draw each map cell
 			if mget(x,y)>0 then
+			 --wall shadows
 				--line(x,y,x+mget(x,y)/2,y,5)
+				--floor
 				pset(x,y-mget(x,y),mc1+mget(x,y)%2)
+				--wall
 				line(x,y-(mget(x,y))+1,x,y,mc2)
 			end
 			--draw actors
@@ -83,6 +86,7 @@ function _draw()
  --end
  --pset(127,127,mget(0,0))
 	--print(s,x+2,y+2)
+	--debug
 	print(stat(0),10,-30)
 	print(stat(1),mw-20,-30)
 	print(mget(p.x,p.y),10,-20)
@@ -96,10 +100,12 @@ function _update()
 	if(btn (3))then p.yspeed=p.speed end
 	--if on the ground then
 	if p.z==-mget(p.x,p.y) then
+		up=false
 	 --can jump while
 		if(btnp(4)) then p.zspeed=p.speed sfx(0,1) end
 		--die if it is bottom z level
 			if mget(p.x,p.y)==0 then p.x=px p.y=py end
+	else if p.zspeed>=0 then up=true end
 	end
 
 	--if(btn (5))then makeactor(x+5,y+5,2,4,15) end
@@ -112,6 +118,7 @@ function _update()
 	p.z-=p.zspeed
 	--if in the air, fall. if not, stand at maps height
 	if(p.z<-mget(p.x,p.y)) then p.zspeed-=0.09
+		if p.zspeed<0 and up==true then up=false sfx(2,1) end
 	 else p.z=-mget(p.x,p.y)
 	end
 	--if p.zspeed < 0 then sfx(2,1) end
