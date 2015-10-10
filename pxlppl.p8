@@ -97,13 +97,14 @@ function _draw()
 	for y=0,mh do
 		for x=0,mw do
 		 --draw each map cell
-			if mget(x,y)>0 then
+		 local h=mget(x,y)
+			if h>0 then
 			 --wall shadows
 				--line(x,y,x+mget(x,y)/2,y,5)
 				--floor
-				pset(x,y-mget(x,y),mc1+mget(x,y)%2)
+				pset(x,y-h,mc1+h%2)
 				--wall
-				line(x,y-(mget(x,y))+1,x,y,(mc2+(y%2)*1)) --+(y%2)*12
+				line(x,y-h+1,x,y,(mc2+(y%2))) --+(y%2)*12
 			end
 			--draw actors
 			--for a=1,count(actor) do
@@ -130,6 +131,7 @@ end
 
 function _update()
 	p.xspeed=0 p.yspeed=0
+	local ph=mget(p.x,p.y)
 	if(btn (5) or btn(4)) then
 		if(btn (0))then p.xspeed=-p.speed end
 		if(btn (1))then p.xspeed=p.speed end
@@ -137,14 +139,14 @@ function _update()
 		if(btn (3))then p.yspeed=p.speed end
 	end
 	--if on the ground then
-	if p.z==-mget(p.x,p.y) then fall=0 ground+=1
+	if p.z==-ph then fall=0 ground+=1
 	 --can jump while
 	 if ground>2 then
 			if(btnp(4)) then p.zspeed=p.speed sfx(3,1) end
 		end
 		--die if it is bottom z level
 		if flc!=13 then
-			if mget(p.x,p.y)==0 then p.x=px p.y=py end
+			if ph==0 then p.x=px p.y=py end
 		end
 	end
 
